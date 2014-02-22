@@ -5,6 +5,6 @@ pygame.init()
 print "hey I finaly got this working!"
 sounds = []
 sounds.append(pygame.mixer.Sound('kissMe.mid'))
-sounds.append(pygame.mixer.Sound('example.mid'))
+sounds.append(pygame.mixer.Sound('mary.mid'))
 for sound in sounds:
     sound.play()
