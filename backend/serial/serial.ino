@@ -1,23 +1,17 @@
 #include "XimuReceiver.h"
-#include <SoftwareSerial.h>
 
 XimuReceiver receiver;
-// Digital Pin 2 is RX
-SoftwareSerial imuSerial(2, 3);
 
 void setup() {
   Serial.begin(115200);
-  // According to documentation, Leonardo needs to wait for serial port connect
-  while(!Serial) {;}
-  
-  imuSerial.begin(115200);
+  Serial1.begin(115200);
 }
 
 void loop() {
   ErrorCode e = ERR_NO_ERROR;
   
-  while(Serial.available() > 0){
-    e = receiver.processNewChar(imuSerial.read());
+  if (Serial1.available() > 0){
+    e = receiver.processNewChar(Serial1.read());
   }
   
   if (e != ERR_NO_ERROR) {
