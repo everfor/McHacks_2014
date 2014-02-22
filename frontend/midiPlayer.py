@@ -1,22 +1,10 @@
-#!/usr/bin/env python
-
-import midi
-# Instantiate a MIDI Pattern (contains a list of tracks)
-pattern = midi.Pattern()
-# Instantiate a MIDI Track (contains a list of MIDI events)
-track = midi.Track()
-# Append the track to the pattern
-pattern.append(track)
-# Instantiate a MIDI note on event, append it to the track
-on = midi.NoteOnEvent(tick=0, velocity=20, pitch=midi.G_3)
-track.append(on)
-# Instantiate a MIDI note off event, append it to the track
-off = midi.NoteOffEvent(tick=100, pitch=midi.G_3)
-track.append(off)
-# Add the end of track event, append it to the track
-eot = midi.EndOfTrackEvent(tick=1)
-track.append(eot)
-# Print out the pattern
-print pattern
-# Save the pattern to disk
-midi.write_midifile("example.mid", pattern)
+import pygame
+pygame.mixer.init()
+pygame.mixer.pre_init(44100, -16, 2, 2048)
+pygame.init()
+print "hey I finaly got this working!"
+sounds = []
+sounds.append(pygame.mixer.Sound('kissMe.mid'))
+sounds.append(pygame.mixer.Sound('example.mid'))
+for sound in sounds:
+    sound.play()
