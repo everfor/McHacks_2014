@@ -1,12 +1,3 @@
 
 backend/.DS_Store
 
-backend/serial/XimuReceiver.cpp
-
-backend/serial/XimuReceiver.h
-
-backend/serial/serial.ino
-
-backend/serial/serial.ino
-
-backend/Ximu/serial.ino
