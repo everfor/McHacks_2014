@@ -272,7 +272,7 @@ DrumSet XimuReceiver::getDrum(void) {
 	float vertAcc = currentRaw.accZ;
 	drum.strength = (short) ceilf(-1.0f * vertAcc + 1.0f);
 
-	currentAngles.yaw += 90.0f;
+	// currentAngles.yaw += 90.0f;
 	// Super complicated if statements to determin which drum is currently destroyed
 	if (currentAngles.yaw >= 0 && currentAngles.yaw < THRESHOLD) {
 		if (currentAngles.pitch > DIST_ANGLE) {
@@ -373,7 +373,8 @@ bool XimuReceiver::detectPeak(void) {
 	bool flag = largerCurrent & (drum.strength < lastDrum.strength);
 	largerCurrent = drum.strength >= lastDrum.strength;
         
-        lastDrum = drum;
+        lastDrum.drumID = drum.drumID;
+        lastDrum.strength = drum.strength;
 	return flag;
 }
 

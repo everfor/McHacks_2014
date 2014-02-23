@@ -25,7 +25,7 @@ byte serialData[4];
 XimuReceiver receiver;
   
 void setup(){
-  Serial1.begin(115200);
+  Serial1.begin(57600);
   Serial.begin(28800);
   /*
    * Setup pins / SPI.
@@ -78,7 +78,7 @@ void setup(){
 void loop(){
     ErrorCode e = ERR_NO_ERROR;
   
-    if (Serial1.available() > 0){
+    while (Serial1.available() > 0){
       e = receiver.processNewChar(Serial1.read());
     }
   
@@ -90,7 +90,7 @@ void loop(){
   
     if (receiver.isInertialAndMagGetReady() && receiver.isQuaternionGetReady()) {
       DrumSet drum = receiver.getDrum();
-      if (drum.drumID > 0 && drum.strength > 1) {
+      if (drum.drumID > 0 && drum.strength > 0) {
         if (receiver.detectPeak()) { 
             // Use drum.drumID to get ID and drum.strength to get strength
             data = drum.drumID;
@@ -99,7 +99,7 @@ void loop(){
         }
       }
     }
-  
+
   unsigned long time = millis();
   Mirf.setTADDR((byte *)"serv1");
   

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import sys
 import serial
 import struct
 import time
