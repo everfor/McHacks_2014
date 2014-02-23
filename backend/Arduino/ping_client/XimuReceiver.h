@@ -76,9 +76,9 @@ typedef struct {
 
 typedef struct {
 	// Strength: 1 ~ 16, as indications of strength
-	byte strength;
+	char strength;
 	// ID of drum: 1 ~ 7
-	byte drumID;
+	char drumID;
 } DrumSet;
 
 //------------------------------------------------------------------------------
