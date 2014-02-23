@@ -84,7 +84,7 @@ def parse(line):
     data = struct.unpack('bbb', line)
     drum = data[0]
     velocity = data[1]
-
+    print data
     return drum, velocity
 
 
@@ -107,10 +107,10 @@ try:
 
     if __name__ == '__main__':
         pygame.init()
-        screen = pygame.display.set_mode((1280, 800), pygame.FULLSCREEN)
+        screen = pygame.display.set_mode((1280, 800))
         background = pygame.image.load('img/BG.png')
         screen.fill((25, 25, 25))
-        screen.blit(background, [0, 0])
+        screen.blit(background, [10, 40])
         pygame.display.flip()
 
         # FRUIT LOOPS
@@ -130,9 +130,9 @@ try:
 
                 if drum > 0:
                     image = pygame.image.load('img/' + drumImages[drum] + '_' + hovering + '.png')
-                    screen.blit(image, [0, 0])
+                    screen.blit(image, [10, 40])
                 else:
-                    screen.blit(background, [0, 0])
+                    screen.blit(background, [10, 40])
 
                 pygame.display.flip()
 
@@ -140,6 +140,7 @@ try:
                 # PEACE OUT IF CONNECTION DROPS
                 print 'connection dropped'
                 time.sleep(1)
+                ser.close()
                 print 'exiting...'
                 fs.delete()
                 exit(1)
