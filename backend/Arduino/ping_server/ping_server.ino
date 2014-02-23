@@ -79,10 +79,9 @@ void loop(){
      */
      
     Mirf.getData(data);
-    byte* ch = data;
-    Serial.write(ch);
-    Serial.write(ch+1);
-    Serial.write(ch+2);
+    Serial.print((String)(data[0]));
+    Serial.print((String)(data[1]));
+    Serial.print((String)(data[2]));
     Serial.println();
    
     /*
