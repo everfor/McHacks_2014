@@ -7,7 +7,7 @@ if __name__ == '__main__':
     backrgound = pygame.image.load('img/BG.png')
     drum = pygame.image.load('img/crash1_hit.png')
     screen.fill((25,25,25))
-    screen.blit(backrgound, [0, 0])
+    screen.blit(backrgound, [10, 40])
     pygame.display.flip()
     try:
         while 1:
@@ -18,9 +18,9 @@ if __name__ == '__main__':
                 if event.key == pygame.K_ESCAPE or event.unicode == 'q':
                     break
                 if event.unicode == 'a':
-                    screen.blit(drum, [0, 0])
+                    screen.blit(drum, [10, 40])
             else:
-                screen.blit(backrgound, [0, 0])
+                screen.blit(backrgound, [10, 40])
             pygame.display.flip()
     finally:
         pygame.quit()

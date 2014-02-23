@@ -110,7 +110,7 @@ try:
         screen = pygame.display.set_mode((1280, 800), pygame.FULLSCREEN)
         background = pygame.image.load('img/BG.png')
         screen.fill((25, 25, 25))
-        screen.blit(background, [0, 0])
+        screen.blit(background, [10, 40])
         pygame.display.flip()
 
         # FRUIT LOOPS
@@ -130,9 +130,9 @@ try:
 
                 if drum > 0:
                     image = pygame.image.load('img/' + drumImages[drum] + '_' + hovering + '.png')
-                    screen.blit(image, [0, 0])
+                    screen.blit(image, [10, 40])
                 else:
-                    screen.blit(background, [0, 0])
+                    screen.blit(background, [10, 40])
 
                 pygame.display.flip()
 
