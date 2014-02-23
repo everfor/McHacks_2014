@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
 				command.append(" ");
 				command.append(std::to_string(drum.strength));
 				// System call to run python codes
-				std::system(commands.c_str());
+				std::system(command.c_str());
 			}
 		}
 	}

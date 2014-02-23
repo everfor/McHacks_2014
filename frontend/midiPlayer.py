@@ -67,14 +67,19 @@ drumID = [
 fs = fluidsynth.Synth(gain=3)
 fs.start()
 
-sfid = fs.sfload("best drums.sf2")
+sfid = fs.sfload("../../frontend/best drums.sf2")
 fs.program_select(0, sfid, 0, 0)
 
 def playDrum(drum, velocity):
-    fs.noteon(0, drumID[drum], velocity * 4)
+    fs.noteon(0, drumID[drum], 127)
     print drumID[drum], "\t", velocity
+    time.sleep(0.1)
+    fs.noteoff(0, drumID[drum])
+    # time.sleep(1.0)
 
-playDrum(str(sys.argv)[1], str(sys.argv)[2])
+
+playDrum(int(sys.argv[1]), int(sys.argv[2]))
+fs.delete()
 
 # for i in xrange(35, 82):
 #     fs.noteon(0, i, 127)
