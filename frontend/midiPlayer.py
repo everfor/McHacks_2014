@@ -69,10 +69,8 @@ def connect():
 
 def parse(line):
     data = struct.unpack('bbb', line)
-    drum = data[0] & 0xFC + (data[1] & 0xC0) >> 6
-    button1 = (data[1] & 0x30) >> 4
-    button2 = (data[1] & 0x0C) >> 2
-    velocity = (data[2] & 0xFC) >> 2
+    drum = data[0]
+    velocity = data[1]
 
     return drum, velocity
 
