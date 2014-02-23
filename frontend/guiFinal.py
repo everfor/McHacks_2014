@@ -5,7 +5,7 @@ import pygame.gfxdraw
 import serial
 import struct
 import time
-import thread
+from pygame.locals import *
 import fluidsynth
 
 TEENSY_PATH = "/dev/tty.usbmodem10131"  # 'dev/teensy'
@@ -59,6 +59,8 @@ drumImages = [
 drum = 0
 velocity = 0
 
+prevImg = ''
+
 
 # ESTABLISH CONNECTION
 def connect():
@@ -81,6 +83,9 @@ def connect():
 
 
 def parse(line):
+    if len(line) != 3:
+        return 0, 0
+        
     data = struct.unpack('bbb', line)
     drum = data[0]
     velocity = data[1]
@@ -101,31 +106,11 @@ def playDrum(drum, velocity):
     # print drumID[drum], "\t", velocity
     # time.sleep(0.1)
 
-
-def gui():
-    pygame.init()
-    screen = pygame.display.set_mode((1280, 800))
-    background = pygame.image.load('img/BG.png')
-    screen.fill((25, 25, 25))
-    screen.blit(background, [10, 40])
-    pygame.display.flip()
-
-    while True:
-        hovering = 'hover' if (velocity <= 0) else 'hit'
-
-        if drum > 0:
-            image = pygame.image.load('img/' + drumImages[drum] + '_' + hovering + '.png')
-            screen.blit(image, [10, 40])
-        else:
-            screen.blit(background, [10, 40])
-
-        pygame.display.flip()
-
-
 # MAIN
 try:
     # CONNECT
     ser = connect()
+
     # thread.start_new_thread(gui, () )
     i = 0
     j = 0
@@ -135,9 +120,20 @@ try:
     velocityAvg = [0] * 5
     velocityDiff = [0] * 2
 
+    pygame.init()
+    screen = pygame.display.set_mode((1280, 800))
+    background = pygame.image.load('img/BG.png')
+    screen.fill((25, 25, 25))
+    screen.blit(background, [10, 40])
+    pygame.display.flip()
+    pygame.display.set_caption("my window")
+    pygame.event.set_allowed(None)
+
     # FRUIT LOOPS
     while True:
         try:
+            pygame.event.pump()
+
             # READ SERIAL DATA AND PUBLISH TOPIC
             line = ser.readline().rstrip()
             drum, velocity = parse(line)
@@ -154,7 +150,7 @@ try:
             i += 1
             j += 1
             k += 1
-            
+
             if i == 5:
                 i = 0
 
@@ -163,6 +159,20 @@ try:
 
             if k == 2:
                 k = 0
+
+            hovering = 'hover' if (velocity <= 0) else 'hit'
+
+            img = drumImages[drum] + '_' + hovering + '.png'
+
+            if drum == 0:
+                img = 'BG.png'
+
+            if not prevImg is img:
+                image = pygame.image.load('img/' + img)
+                screen.blit(image, [10, 40])
+                pygame.display.update()
+
+            prevImg = img
 
         except serial.serialutil.SerialException:
             # PEACE OUT IF CONNECTION DROPS
