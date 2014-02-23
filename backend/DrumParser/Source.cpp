@@ -31,10 +31,8 @@ int main(int argc, char** argv) {
 				command.append(std::to_string(drum.drumID));
 				command.append(" ");
 				command.append(std::to_string(drum.strength));
-				char* commands;
-				std::strcpy(commands,command.c_str());
 				// System call to run python codes
-				std::system(commands);
+				std::system(commands.c_str());
 			}
 		}
 	}
