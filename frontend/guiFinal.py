@@ -53,11 +53,11 @@ drumImages = [
     "floor",
     "mid",
     "ride",
-    "crashg"
+    "crash2"
 ]
 
-threads = [None]*16
-i = 0
+drum = 0
+velocity = 0
 
 
 # ESTABLISH CONNECTION
@@ -84,7 +84,7 @@ def parse(line):
     data = struct.unpack('bbb', line)
     drum = data[0]
     velocity = data[1]
-    print data
+    # print data
     return drum, velocity
 
 
@@ -97,53 +97,81 @@ fs.program_select(0, sfid, 0, 0)
 
 def playDrum(drum, velocity):
     fs.noteon(0, drumID[drum], 127)
-    print drumID[drum], "\t", velocity
+    time.sleep(0.2)
+    # print drumID[drum], "\t", velocity
     # time.sleep(0.1)
+
+
+def gui():
+    pygame.init()
+    screen = pygame.display.set_mode((1280, 800))
+    background = pygame.image.load('img/BG.png')
+    screen.fill((25, 25, 25))
+    screen.blit(background, [10, 40])
+    pygame.display.flip()
+
+    while True:
+        hovering = 'hover' if (velocity <= 0) else 'hit'
+
+        if drum > 0:
+            image = pygame.image.load('img/' + drumImages[drum] + '_' + hovering + '.png')
+            screen.blit(image, [10, 40])
+        else:
+            screen.blit(background, [10, 40])
+
+        pygame.display.flip()
+
 
 # MAIN
 try:
     # CONNECT
     ser = connect()
+    # thread.start_new_thread(gui, () )
+    i = 0
+    j = 0
+    k = 0
 
-    if __name__ == '__main__':
-        pygame.init()
-        screen = pygame.display.set_mode((1280, 800))
-        background = pygame.image.load('img/BG.png')
-        screen.fill((25, 25, 25))
-        screen.blit(background, [10, 40])
-        pygame.display.flip()
+    velocities = [0] * 5
+    velocityAvg = [0] * 5
+    velocityDiff = [0] * 2
 
-        # FRUIT LOOPS
-        while True:
-            try:
-                # READ SERIAL DATA AND PUBLISH TOPIC
-                line = ser.readline().rstrip()
+    # FRUIT LOOPS
+    while True:
+        try:
+            # READ SERIAL DATA AND PUBLISH TOPIC
+            line = ser.readline().rstrip()
+            drum, velocity = parse(line)
 
-                drum, velocity = parse(line)
-                threads[i] = thread.start_new_thread(playDrum, (drum, velocity, ))
+            velocities[i] = velocity
+            velocity = sum(velocities) / 5
+            velocityAvg[j] = velocity
 
-                i += 1
-                if i == 16:
-                    i = 0
+            velocityDiff[k] = 2 * velocityAvg[j] + velocityAvg[j - 1] - velocityAvg[j - 3] - 2 * velocityAvg[j - 4]
 
-                hovering = 'hover' if (velocity <= 0) else 'hit'
+            if (velocityDiff[k] > 0 and velocityDiff[k - 1] < 0) or (velocityDiff[k] < 0 and velocityDiff[k - 1] > 0):
+                playDrum(drum, velocity)
 
-                if drum > 0:
-                    image = pygame.image.load('img/' + drumImages[drum] + '_' + hovering + '.png')
-                    screen.blit(image, [10, 40])
-                else:
-                    screen.blit(background, [10, 40])
+            i += 1
+            j += 1
+            k += 1
+            
+            if i == 5:
+                i = 0
 
-                pygame.display.flip()
+            if j == 5:
+                j = 0
 
-            except serial.serialutil.SerialException:
-                # PEACE OUT IF CONNECTION DROPS
-                print 'connection dropped'
-                time.sleep(1)
-                ser.close()
-                print 'exiting...'
-                fs.delete()
-                exit(1)
+            if k == 2:
+                k = 0
+
+        except serial.serialutil.SerialException:
+            # PEACE OUT IF CONNECTION DROPS
+            print 'connection dropped'
+            time.sleep(1)
+            ser.close()
+            print 'exiting...'
+            fs.delete()
+            exit(1)
 
 except KeyboardInterrupt:
     # CTRL-C FRIENDLY

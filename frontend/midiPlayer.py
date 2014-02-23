@@ -42,36 +42,36 @@ drumID = [
     crash_cymbal_2
 ]
 
-threads = [None]*16
-i = 0
+# threads = [None]*16
+# i = 0
 
 
-# ESTABLISH CONNECTION
-def connect():
+# # ESTABLISH CONNECTION
+# def connect():
 
-    print 'connecting to teensy...'
+#     print 'connecting to teensy...'
 
-    # KEEP TRYING UNTIL WORKS
-    done = False
-    while not done:
-        try:
-            ser = serial.Serial(TEENSY_PATH)
-            done = True
-        except serial.serialutil.SerialException:
-            print 'connection failed'
-            time.sleep(1)
+#     # KEEP TRYING UNTIL WORKS
+#     done = False
+#     while not done:
+#         try:
+#             ser = serial.Serial(TEENSY_PATH)
+#             done = True
+#         except serial.serialutil.SerialException:
+#             print 'connection failed'
+#             time.sleep(1)
 
-    print 'connected!'
+#     print 'connected!'
 
-    return ser
+#     return ser
 
 
-def parse(line):
-    data = struct.unpack('bbb', line)
-    drum = data[0]
-    velocity = data[1]
+# def parse(line):
+#     data = struct.unpack('bbb', line)
+#     drum = data[0]
+#     velocity = data[1]
 
-    return drum, velocity
+#     return drum, velocity
 
 
 fs = fluidsynth.Synth(gain=3)
@@ -86,37 +86,42 @@ def playDrum(drum, velocity):
     print drumID[drum], "\t", velocity
     time.sleep(0.1)
 
-# MAIN
-try:
-    # CONNECT
-    ser = connect()
+for i in xrange(35, 81):
+    fs.noteon(0, i, 127)
+    time.sleep(0.1)
 
-    # FRUIT LOOPS
-    while True:
-        try:
-            # READ SERIAL DATA AND PUBLISH TOPIC
-            line = ser.readline().rstrip()
 
-            drum, velocity = parse(line)
-            threads[i] = thread.start_new_thread(playDrum, (drum, velocity, ))
+# # MAIN
+# try:
+#     # CONNECT
+#     ser = connect()
 
-            i += 1
-            if i == 16:
-                i = 0
+#     # FRUIT LOOPS
+#     while True:
+#         try:
+#             # READ SERIAL DATA AND PUBLISH TOPIC
+#             line = ser.readline().rstrip()
 
-        except serial.serialutil.SerialException:
-            # PEACE OUT IF CONNECTION DROPS
-            print 'connection dropped'
-            time.sleep(1)
-            print 'exiting...'
-            fs.delete()
-            exit(1)
+#             drum, velocity = parse(line)
+#             threads[i] = thread.start_new_thread(playDrum, (drum, velocity, ))
 
-except KeyboardInterrupt:
-    # CTRL-C FRIENDLY
-    print ''
-    print 'goodbye!'
-    ser.close()
-    fs.delete()
-    time.sleep(1)
-    exit(0)
+#             i += 1
+#             if i == 16:
+#                 i = 0
+
+#         except serial.serialutil.SerialException:
+#             # PEACE OUT IF CONNECTION DROPS
+#             print 'connection dropped'
+#             time.sleep(1)
+#             print 'exiting...'
+#             fs.delete()
+#             exit(1)
+
+# except KeyboardInterrupt:
+#     # CTRL-C FRIENDLY
+#     print ''
+#     print 'goodbye!'
+#     ser.close()
+#     fs.delete()
+#     time.sleep(1)
+#     exit(0)
