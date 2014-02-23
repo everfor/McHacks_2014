@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import sys, time
 import fluidsynth
 
 TEENSY_PATH = "/dev/tty.usbmodem10131"  # 'dev/teensy'
@@ -64,6 +64,11 @@ drumID = [
 #     drumID = int(str[1:])
 
 
+fs = fluidsynth.Synth(gain=3)
+fs.start()
+
+sfid = fs.sfload("best drums.sf2")
+fs.program_select(0, sfid, 0, 0)
 
 def playDrum(drum, velocity):
     fs.noteon(0, drumID[drum], velocity * 4)
@@ -71,16 +76,16 @@ def playDrum(drum, velocity):
 
 playDrum(str(sys.argv)[1], str(sys.argv)[2])
 
+# for i in xrange(35, 82):
+#     fs.noteon(0, i, 127)
+#     print i
+#     time.sleep(0.2)
+
+
 # # MAIN
 # try:
 #     # CONNECT
 #     ser = connect()
-
-#     fs = fluidsynth.Synth(gain=3)
-#     fs.start()
-
-#     sfid = fs.sfload("best drums.sf2")
-#     fs.program_select(0, sfid, 0, 0)
 
 #     # FRUIT LOOPS
 #     while True:
