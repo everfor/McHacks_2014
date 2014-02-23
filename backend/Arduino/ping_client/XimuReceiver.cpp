@@ -110,11 +110,13 @@ InertialAndMagStruct lastRaw = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 
 // Drum
 DrumSet drum = { 0, 0 };
+DrumSet lastDrum = { 0, 0 };
 
 // Data ready flags
 bool battAndThermGetReady = false;
 bool inertialAndMagGetReady = false;
 bool quaternionGetReady = false;
+bool largerCurrent = false;
 
 //------------------------------------------------------------------------------
 // Methods
@@ -365,6 +367,14 @@ DrumSet XimuReceiver::getDrumAlternative(void) {
 	}
 
 	return drum;
+}
+
+bool XimuReceiver::detectPeak(void) {
+	bool flag = largerCurrent & (drum.strength < lastDrum.strength);
+	largerCurrent = drum.strength >= lastDrum.strength;
+        
+        lastDrum = drum;
+	return flag;
 }
 
 float radiansToDegrees (float radians) {

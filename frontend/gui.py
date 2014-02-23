@@ -1,30 +1,26 @@
 import pygame
-import sys
-pygame.init()
+import pygame.gfxdraw
 
-size = width, height = 1280, 720
-speed = [2, 2]
-black = 0, 0, 0
+if __name__ == '__main__':
+	pygame.init()
+	screen = pygame.display.set_mode((1280, 720))
+	backrgound = pygame.image.load('img/BG.png')
+	drum = pygame.image.load('img/crash1_hit.png')
 
-screen = pygame.display.set_mode(size)
-
-ball = pygame.image.load("ball.gif")
-ballrect = ball.get_rect()
-screen.fill(black)
-
-while 1:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-
-    ballrect = ballrect.move(speed)
-    if ballrect.left < 0 or ballrect.right > width:
-        speed[0] = -speed[0]
-    if ballrect.top < 0 or ballrect.bottom > height:
-        speed[1] = -speed[1]
-
-    pygame.draw.circle(screen,(255,255,255),(500,500),200)
-    pygame.display.flip()
-
-    screen.blit(ball, ballrect)
-    pygame.display.flip()
+	screen.blit(backrgound, [0, 0])
+	pygame.display.flip()
+	try:
+		while 1:
+			event = pygame.event.wait()
+			if event.type == pygame.QUIT:
+				break
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE or event.unicode == 'q':
+					break
+				if event.unicode == 'a':
+					screen.blit(drum, [0, 0])
+			else:
+				screen.blit(backrgound, [0, 0])
+			pygame.display.flip()
+	finally:
+		pygame.quit()

@@ -115,6 +115,7 @@ DrumSet drum = { 0, 0 };
 bool battAndThermGetReady = false;
 bool inertialAndMagGetReady = false;
 bool quaternionGetReady = false;
+bool largerCurrent = false;
 
 //------------------------------------------------------------------------------
 // Methods
