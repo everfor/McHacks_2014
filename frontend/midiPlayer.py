@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import time
+import sys
 import fluidsynth
+
+TEENSY_PATH = "/dev/tty.usbmodem10131"  # 'dev/teensy'
 
 no_drum = 0
 
@@ -37,19 +39,69 @@ drumID = [
             crash_cymbal_2
         ]
 
-fs = fluidsynth.Synth(gain=3)
-fs.start()
+# # ESTABLISH CONNECTION
+# def connect():
 
-sfid = fs.sfload("best drums.sf2")
-fs.program_select(0, sfid, 0, 0)
+#     print 'connecting to teensy...'
+
+#     # KEEP TRYING UNTIL WORKS
+#     done = False
+#     while not done:
+#         try:
+#             ser = serial.Serial(TEENSY_PATH)
+#             done = True
+#         except serial.serialutil.SerialException:
+#             print 'connection failed'
+#             time.sleep(1)
+
+#     print 'connected!'
+
+#     return ser
+
+
+# def parse(line):
+
+#     drumID = int(str[1:])
+
+
 
 def playDrum(drum, velocity):
-    fs.noteon(0, drumID[drum], velocity * 8)
+    fs.noteon(0, drumID[drum], velocity * 4)
     print drumID[drum], "\t", velocity
-    
-# i = 0
-# while True:
-#     fs.noteon(0, drumID[0], 127)
-#     print i
-#     i+=1
-#     time.sleep(0.5)
+
+playDrum(str(sys.argv)[1], str(sys.argv)[2])
+
+# # MAIN
+# try:
+#     # CONNECT
+#     ser = connect()
+
+#     fs = fluidsynth.Synth(gain=3)
+#     fs.start()
+
+#     sfid = fs.sfload("best drums.sf2")
+#     fs.program_select(0, sfid, 0, 0)
+
+#     # FRUIT LOOPS
+#     while True:
+#         try:
+#             # READ SERIAL DATA AND PUBLISH TOPIC
+#             line = ser.readline().rstrip()
+
+#             drumID, velocity = parse(line)
+#             playDrum(drumID, velocity)
+
+#         except serial.serialutil.SerialException:
+#             # PEACE OUT IF CONNECTION DROPS
+#             print 'connection dropped'
+#             time.sleep(1)
+#             print 'exiting...'
+#             exit(1)
+
+# except KeyboardInterrupt:
+#     # CTRL-C FRIENDLY
+#     print ''
+#     print 'goodbye!'
+#     ser.close()
+#     time.sleep(1)
+#     exit(0)
