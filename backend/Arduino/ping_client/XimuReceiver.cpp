@@ -268,7 +268,7 @@ DrumSet XimuReceiver::getDrum(void) {
 
 	// Vertical acceleration to determin strength
 	float vertAcc = currentRaw.accZ;
-	drum.strength = (short) ceilf(-1.0f * vertAcc / 0.5f + 1.0f);
+	drum.strength = (short) ceilf(-1.0f * vertAcc + 1.0f);
 
 	currentAngles.yaw += 90.0f;
 	// Super complicated if statements to determin which drum is currently destroyed
