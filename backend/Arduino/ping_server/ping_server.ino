@@ -73,13 +73,18 @@ void loop(){
    */
    
   if(!Mirf.isSending() && Mirf.dataReady()){
-    Serial.println("Got packet");
     
     /*
      * Get load the packet into the buffer.
      */
      
     Mirf.getData(data);
+    byte* ch = data;
+    Serial.write(ch);
+    Serial.write(ch+1);
+    Serial.write(ch+2);
+    Serial.write(ch+3);
+   
     /*
      * Set the send address.
      */
