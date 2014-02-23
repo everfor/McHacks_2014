@@ -93,8 +93,10 @@ void loop(){
       DrumSet drum = receiver.getDrum();
       if (drum.drumID > 0 && drum.strength > 1) {
         if (detectPeak(drum)) { 
-            // Do whatever.
             // Use drum.drumID to get ID and drum.strength to get strength
+            data[0] = drum.drumID;
+            data[1] = drum.strength;
+            data[3] = 0;
         }
   
         lastDrum = drum;

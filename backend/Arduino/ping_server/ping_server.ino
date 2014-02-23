@@ -55,7 +55,7 @@ void setup(){
    
   Mirf.config();
   
-  Serial.println("Listening..."); 
+  //Serial.println("Listening..."); 
 }
 
 void loop(){
@@ -83,7 +83,7 @@ void loop(){
     Serial.write(ch);
     Serial.write(ch+1);
     Serial.write(ch+2);
-    Serial.write(ch+3);
+    Serial.println();
    
     /*
      * Set the send address.
