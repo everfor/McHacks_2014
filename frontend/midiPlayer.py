@@ -45,23 +45,11 @@ fs.program_select(0, sfid, 0, 0)
 
 def playDrum(drum, velocity):
     fs.noteon(0, drumID[drum], velocity * 8)
-    print drumID[drum]
-
-# fs.noteon(0, open_hi_hat, 80)
-# fs.noteon(0, cabasa, 127)
-# 
-# 
+    print drumID[drum], "\t", velocity
+    
 # i = 0
 # while True:
-#     fs.noteon(0, drumID[2], 127)
+#     fs.noteon(0, drumID[0], 127)
 #     print i
 #     i+=1
-    # time.sleep(0.5)
-
-# fs.noteoff(0, 60)
-# fs.noteoff(0, 67)
-# fs.noteoff(0, 76)
-
-# time.sleep(1.0)
-
-# fs.delete()
+#     time.sleep(0.5)
