@@ -83,13 +83,13 @@ def connect():
 
 
 def parse(line):
-    if len(line) != 3:
-        return 0, 0
-        
+    # if len(line) != 3:
+    #     return 0, 0
+
     data = struct.unpack('bbb', line)
     drum = data[0]
     velocity = data[1]
-    # print data
+    print data
     return drum, velocity
 
 
@@ -120,19 +120,19 @@ try:
     velocityAvg = [0] * 5
     velocityDiff = [0] * 2
 
-    pygame.init()
-    screen = pygame.display.set_mode((1280, 800))
-    background = pygame.image.load('img/BG.png')
-    screen.fill((25, 25, 25))
-    screen.blit(background, [10, 40])
-    pygame.display.flip()
-    pygame.display.set_caption("my window")
-    pygame.event.set_allowed(None)
+    # pygame.init()
+    # screen = pygame.display.set_mode((1280, 800))
+    # background = pygame.image.load('img/BG.png')
+    # screen.fill((25, 25, 25))
+    # screen.blit(background, [10, 40])
+    # pygame.display.flip()
+    # pygame.display.set_caption("my window")
+    # pygame.event.set_allowed(None)
 
     # FRUIT LOOPS
     while True:
         try:
-            pygame.event.pump()
+            # pygame.event.pump()
 
             # READ SERIAL DATA AND PUBLISH TOPIC
             line = ser.readline().rstrip()
@@ -160,19 +160,19 @@ try:
             if k == 2:
                 k = 0
 
-            hovering = 'hover' if (velocity <= 0) else 'hit'
+            # hovering = 'hover' if (velocity <= 0) else 'hit'
 
-            img = drumImages[drum] + '_' + hovering + '.png'
+            # img = drumImages[drum] + '_' + hovering + '.png'
 
-            if drum == 0:
-                img = 'BG.png'
+            # if drum == 0:
+            #     img = 'BG.png'
 
-            if not prevImg is img:
-                image = pygame.image.load('img/' + img)
-                screen.blit(image, [10, 40])
-                pygame.display.update()
+            # if not prevImg is img:
+            #     image = pygame.image.load('img/' + img)
+            #     screen.blit(image, [10, 40])
+            #     pygame.display.update()
 
-            prevImg = img
+            # prevImg = img
 
         except serial.serialutil.SerialException:
             # PEACE OUT IF CONNECTION DROPS
@@ -187,7 +187,10 @@ except KeyboardInterrupt:
     # CTRL-C FRIENDLY
     print ''
     print 'goodbye!'
-    ser.close()
+    try:
+        ser.close()
+    except:
+        pass
     fs.delete()
     pygame.quit()
     time.sleep(1)
