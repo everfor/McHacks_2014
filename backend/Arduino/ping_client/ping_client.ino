@@ -93,9 +93,9 @@ void loop(){
       if (drum.drumID > 0 && drum.strength > 1) {
         if (receiver.detectPeak()) { 
             // Use drum.drumID to get ID and drum.strength to get strength
-            data[0] = drum.drumID;
-            data[1] = drum.strength;
-            data[3] = 0;
+            data = drum.drumID;
+            data = data + drum.strength << 4;
+            data = data + 0 << 8;
         }
       }
     }
