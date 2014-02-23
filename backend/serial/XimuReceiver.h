@@ -14,6 +14,9 @@
 //------------------------------------------------------------------------------
 // Definitions
 
+const float THRESHOLD = 30.0f;
+const float DIST_ANGLE = -15.0f;
+
 typedef enum {
     ERR_NO_ERROR,
     ERR_FACTORY_RESET_FAILED,
@@ -65,6 +68,19 @@ typedef struct {
     float z;
 } QuaternionStruct;
 
+typedef struct {
+    float roll;     /* rotation around x axis in degrees */
+    float pitch;    /* rotation around y axis in degrees */
+    float yaw;      /* rotation around z axis in degrees */
+} EulerAnglesStruct;
+
+typedef struct {
+	// Strength: 1 ~ 16, as indications of strength
+	short strength;
+	// ID of drum: 1 ~ 7
+	unsigned short drumID;
+} DrumSet;
+
 //------------------------------------------------------------------------------
 // Class declaration
 
@@ -78,6 +94,9 @@ class XimuReceiver {
         BattAndThermStruct getBattAndTherm(void);
         InertialAndMagStruct getInertialAndMag(void);
         QuaternionStruct getQuaternion(void);
+		EulerAnglesStruct getEulerAngles(void);
+		DrumSet getDrum(void);
+		DrumSet getDrumAlternative(void);
 
     private:
         unsigned char buf[256];
@@ -85,12 +104,16 @@ class XimuReceiver {
         BattAndThermStruct battAndThermStruct;
         InertialAndMagStruct inertialAndMagStruct;
         QuaternionStruct quaternionStruct;
+		EulerAnglesStruct eulerAnglesStruct;
+		void setEulerAngles(void);
         bool battAndThermGetReady;
         bool inertialAndMagGetReady;
         bool quaternionGetReady;
         float fixedToFloat(const short fixed, const unsigned char q) const;
         unsigned short concat(const unsigned char msb, const unsigned char lsb) const;
 };
+
+float radiansToDegrees(float);
 
 #endif
 

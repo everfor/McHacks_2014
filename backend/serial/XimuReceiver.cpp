@@ -12,6 +12,7 @@
 // Includes
 
 #include "XimuReceiver.h"
+#include <math.h>
 
 //------------------------------------------------------------------------------
 // Definitions
@@ -102,6 +103,13 @@ unsigned char bufIndex = 0;
 BattAndThermStruct battAndThermStruct = { 0.0f, 0.0f };
 InertialAndMagStruct inertialAndMagStruct = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 QuaternionStruct quaternionStruct = { 1.0f, 0.0f, 0.0f, 0.0f };
+EulerAnglesStruct eulerAnglesStruct = { 0.0f, 0.0f, 0.0f };
+
+// Store readings from last round. Used to calculate the difference
+InertialAndMagStruct lastRaw = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+
+// Drum
+DrumSet drum = { 0, 0 };
 
 // Data ready flags
 bool battAndThermGetReady = false;
@@ -198,6 +206,7 @@ ErrorCode XimuReceiver::processNewChar(unsigned char c) {
                 quaternionStruct.y = fixedToFloat(concat(packet[5], packet[6]), Q_QUATERNION);
                 quaternionStruct.z = fixedToFloat(concat(packet[7], packet[8]), Q_QUATERNION);
                 quaternionGetReady = true;
+				this->setEulerAngles();
                 break;
 
             default:
@@ -240,6 +249,126 @@ InertialAndMagStruct XimuReceiver::getInertialAndMag(void) {
 QuaternionStruct XimuReceiver::getQuaternion(void) {
     quaternionGetReady = false;
     return quaternionStruct;
+}
+
+void XimuReceiver::setEulerAngles(void) {
+	eulerAnglesStruct.roll = radiansToDegrees(atan2(2.0f * (quaternionStruct.y * quaternionStruct.z - quaternionStruct.w * quaternionStruct.x), 2.0f * quaternionStruct.w * quaternionStruct.w - 1.0f + 2.0f * quaternionStruct.z * quaternionStruct.z));
+	eulerAnglesStruct.pitch = radiansToDegrees(-atan((2.0f * (quaternionStruct.x * quaternionStruct.z + quaternionStruct.w * quaternionStruct.y)) / sqrt(1.0f - pow((2.0f * quaternionStruct.x * quaternionStruct.z + 2.0f * quaternionStruct.w * quaternionStruct.y), 2.0f))));
+	eulerAnglesStruct.yaw = radiansToDegrees(atan2(2.0f * (quaternionStruct.x * quaternionStruct.y - quaternionStruct.w * quaternionStruct.z), 2.0f * quaternionStruct.w * quaternionStruct.w - 1.0f + 2.0f * quaternionStruct.x * quaternionStruct.x));
+}
+
+EulerAnglesStruct XimuReceiver::getEulerAngles(void) {
+    quaternionGetReady = false;
+    return eulerAnglesStruct;
+}
+
+DrumSet XimuReceiver::getDrum(void) {
+	EulerAnglesStruct currentAngles = this->getEulerAngles();
+	InertialAndMagStruct currentRaw = this->getInertialAndMag();
+
+	// Vertical acceleration to determin strength
+	float vertAcc = currentRaw.accZ;
+	drum.strength = (short) ceilf(-1.0f * vertAcc / 0.5f + 1.0f);
+
+	currentAngles.yaw += 90.0f;
+	// Super complicated if statements to determin which drum is currently destroyed
+	if (currentAngles.yaw >= 0 && currentAngles.yaw < THRESHOLD) {
+		if (currentAngles.pitch > DIST_ANGLE) {
+			drum.drumID = 3;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw >= THRESHOLD && currentAngles.yaw < 2.0f * THRESHOLD) {
+		if (currentAngles.pitch > DIST_ANGLE) {
+			drum.drumID = 2;
+		} else if (currentAngles.pitch > 2.0f * DIST_ANGLE) {
+			drum.drumID = 4;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw >= 2.0f * THRESHOLD && currentAngles.yaw < 3.0f * THRESHOLD) {
+		if (currentAngles.pitch > DIST_ANGLE) {
+			drum.drumID = 1;
+		} else if (currentAngles.pitch > 2.0f * DIST_ANGLE) {
+			drum.drumID = 4;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw >= -1.0f * THRESHOLD && currentAngles.yaw < 0) {
+		if (currentAngles.pitch > DIST_ANGLE) {
+			drum.drumID = 6;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw >= -2.0f * THRESHOLD && currentAngles.yaw < -1.0f * THRESHOLD) {
+		if (currentAngles.pitch > DIST_ANGLE) {
+			drum.drumID = 5;
+		} else if (currentAngles.pitch > 2.0f * DIST_ANGLE) {
+			drum.drumID = 7;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw >= -3.0f * THRESHOLD && currentAngles.yaw < -2.0f * THRESHOLD) {
+		if (currentAngles.pitch > -15.0) {
+			drum.drumID = 8;
+		} else if (currentAngles.pitch > -30.0) {
+			drum.drumID = 5;
+		} else {
+			drum.drumID = 0;
+		}
+	} else {
+		drum.drumID = 0;
+	}
+
+	return drum;
+}
+
+DrumSet XimuReceiver::getDrumAlternative(void) {
+	EulerAnglesStruct currentAngles = this->getEulerAngles();
+	InertialAndMagStruct currentRaw = this->getInertialAndMag();
+
+	// Vertical acceleration to determin strength
+	float vertAcc = currentRaw.accZ;
+	drum.strength = (short) ceilf(-1.0f * vertAcc / 0.5f);
+
+	// Super complicated if statements to determin which drum is currently destroyed
+	if (currentAngles.yaw >= 0 && currentAngles.yaw < 15.0f) {
+		if (currentAngles.pitch > -5.0) {
+			drum.drumID = 5;
+		} else if (currentAngles.pitch > -15.0f) {
+			drum.drumID = 4;
+		} else {
+			drum.drumID = 6;
+		}
+	} else if (currentAngles.yaw >= 15.0f && currentAngles.yaw < 30.0f) {
+		if (currentAngles.pitch < -15.0) {
+			drum.drumID = 7;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw >= -15.0f && currentAngles.yaw < 0) {
+		if (currentAngles.pitch > -5.0) {
+			drum.drumID = 3;
+		} else if (currentAngles.pitch > -15.0) {
+			drum.drumID = 4;
+		} else {
+			drum.drumID = 0;
+		}
+	} else if (currentAngles.yaw < -15.0f) {
+		if (currentAngles.pitch > -5.0) {
+			drum.drumID = 2;
+		} else {
+			drum.drumID = 1;
+		}
+	} else {
+		drum.drumID = 0;
+	}
+
+	return drum;
+}
+
+float radiansToDegrees (float radians) {
+    return 57.2957795130823f * radians;
 }
 
 //------------------------------------------------------------------------------
