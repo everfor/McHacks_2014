@@ -77,9 +77,29 @@ void setup(){
 }
 
 void loop(){
-
+    ErrorCode e = ERR_NO_ERROR;
   
+    if (Serial1.available() > 0){
+      e = receiver.processNewChar(Serial1.read());
+    }
   
+    if (e != ERR_NO_ERROR) {
+      Serial.print("ERROR: ");
+      Serial.print(e);
+      Serial.print("\n");
+    }
+  
+    if (receiver.isInertialAndMagGetReady() && receiver.isQuaternionGetReady()) {
+      DrumSet drum = receiver.getDrum();
+      if (drum.drumID > 0 && drum.strength > 1) {
+        if (detectPeak(drum)) { 
+            // Do whatever.
+            // Use drum.drumID to get ID and drum.strength to get strength
+        }
+  
+        lastDrum = drum;
+      }
+    }
   
   unsigned long time = millis();
   Mirf.setTADDR((byte *)"serv1");
