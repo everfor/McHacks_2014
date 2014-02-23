@@ -93,6 +93,6 @@ void loop(){
      
      
     Mirf.setTADDR((byte *)"clie1");  
-    // Mirf.send(data);
+    Mirf.send(data);
   }
 }

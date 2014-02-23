@@ -95,28 +95,20 @@ void loop(){
         data = drum.drumID;
         data = data + (drum.strength << 8);
         data = data + (0 << 16);
+   
         Serial.println(data);
-        unsigned long time = millis();
         Mirf.setTADDR((byte *)"serv1");
         
         Mirf.send((byte *)&data);
         
         while(Mirf.isSending()){
         }
-        // Serial.println("Finished sending");
+        Serial.println("Finished sending");
         delay(10);
       }
     }
   /*
-  while(!Mirf.dataReady()){
-    //Serial.println("Waiting");
-    if ( ( millis() - time ) > 200 ) {
-      Serial.println("Timeout on response from server!");
-      digitalWrite(5,HIGH);
-      return;
-      
-    }
-  }
+  
   
   unsigned long feedback;
   Mirf.getData((byte *) &feedback);
