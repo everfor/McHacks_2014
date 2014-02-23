@@ -94,9 +94,9 @@ class XimuReceiver {
         BattAndThermStruct getBattAndTherm(void);
         InertialAndMagStruct getInertialAndMag(void);
         QuaternionStruct getQuaternion(void);
-		EulerAnglesStruct XimuReceiver::getEulerAngles(void);
-		DrumSet XimuReceiver::getDrum(void);
-		DrumSet XimuReceiver::getDrumAlternative(void);
+		EulerAnglesStruct getEulerAngles(void);
+		DrumSet getDrum(void);
+		DrumSet getDrumAlternative(void);
 
     private:
         unsigned char buf[256];
