@@ -19,7 +19,7 @@
 #include <MirfHardwareSpiDriver.h>
 
 void setup(){
-  Serial.begin(28800);
+  Serial.begin(115200);
   
   /*
    * Set the SPI Driver.
@@ -66,7 +66,7 @@ void loop(){
   byte data[Mirf.payload];
   
   /*
-   * If a packet has been recived.
+   * If a packet has been received.
    *
    * isSending also restores listening mode when it 
    * transitions from true to false.
@@ -79,9 +79,12 @@ void loop(){
      */
      
     Mirf.getData(data);
-    Serial.print((String)(data[0]));
-    Serial.print((String)(data[1]));
-    Serial.print((String)(data[2]));
+    Serial.write(data[0]);
+    Serial.write(data[1]);
+    Serial.write(data[2]);
+    // Serial.print(data[0]);
+    // Serial.print(data[1]);
+    // Serial.print(data[2]);
     Serial.println();
    
     /*
@@ -90,6 +93,6 @@ void loop(){
      
      
     Mirf.setTADDR((byte *)"clie1");  
-    Mirf.send(data);
+    // Mirf.send(data);
   }
 }
