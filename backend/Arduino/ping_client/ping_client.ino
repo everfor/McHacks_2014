@@ -91,25 +91,22 @@ void loop(){
     if (receiver.isInertialAndMagGetReady() && receiver.isQuaternionGetReady()) {
       DrumSet drum = receiver.getDrum();
       if (drum.drumID > 0 && drum.strength > 0) {
-        if (receiver.detectPeak()) {
-            // Use drum.drumID to get ID and drum.strength to get strength
-            data = drum.drumID;
-            data = data + (drum.strength << 4);
-            data = data + (0 << 8);
-            Serial.println(data);
+        // Use drum.drumID to get ID and drum.strength to get strength
+        data = drum.drumID;
+        data = data + (drum.strength << 8);
+        data = data + (0 << 16);
+        Serial.println(data);
+        unsigned long time = millis();
+        Mirf.setTADDR((byte *)"serv1");
+        
+        Mirf.send((byte *)&data);
+        
+        while(Mirf.isSending()){
         }
+        // Serial.println("Finished sending");
+        delay(10);
       }
     }
-
-  unsigned long time = millis();
-  Mirf.setTADDR((byte *)"serv1");
-  
-  Mirf.send((byte *)&data);
-  
-  while(Mirf.isSending()){
-  }
-  // Serial.println("Finished sending");
-  delay(10);
   /*
   while(!Mirf.dataReady()){
     //Serial.println("Waiting");
