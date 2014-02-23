@@ -6,15 +6,23 @@
 
 using namespace boost;
 
+XimuReceiver receiver;
+DrumSet lastDrum = { 0, 0 };
+bool largerCurrent = false;
+
+bool detectPeak(DrumSet drum) {
+	bool flag = largerCurrent & (drum.strength < lastDrum.strength);
+	largerCurrent = drum.strength >= lastDrum.strength;
+
+	return flag;
+}
 
 int main(int argc, char** argv) {
 	asio::io_service io;
 	asio::serial_port port(io);
 
-	port.open("/dev/tty.usbserial-AM01L4KI");
+	port.open("COM16");
 	port.set_option(asio::serial_port_base::baud_rate(115200));
-
-	XimuReceiver receiver;
 
 	char c;
 
@@ -27,12 +35,16 @@ int main(int argc, char** argv) {
 		if (receiver.isInertialAndMagGetReady() && receiver.isQuaternionGetReady()) {
 			DrumSet drum = receiver.getDrum();
 			if (drum.drumID > 0 && drum.strength > 1) {
-				std::string command = "python ../../frontend/midiPlayer.py ";
-				command.append(std::to_string(drum.drumID));
-				command.append(" ");
-				command.append(std::to_string(drum.strength));
-				// System call to run python codes
-				std::system(command.c_str());
+				if (detectPeak(drum)) {
+					std::string command = "python ../frontend/midiPlayer.py ";
+					command.append(std::to_string(drum.drumID));
+					command.append(" ");
+					command.append(std::to_string(drum.strength));
+					// System call to run python codes
+					std::system(command.c_str());
+				}
+
+				lastDrum = drum;
 			}
 		}
 	}
