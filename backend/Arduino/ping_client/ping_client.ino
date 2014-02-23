@@ -25,7 +25,7 @@ byte serialData[4];
 XimuReceiver receiver;
   
 void setup(){
-  Serial1.begin(57600);
+  Serial1.begin(115200);
   Serial.begin(28800);
   /*
    * Setup pins / SPI.
@@ -91,11 +91,12 @@ void loop(){
     if (receiver.isInertialAndMagGetReady() && receiver.isQuaternionGetReady()) {
       DrumSet drum = receiver.getDrum();
       if (drum.drumID > 0 && drum.strength > 0) {
-        if (receiver.detectPeak()) { 
+        if (receiver.detectPeak()) {
             // Use drum.drumID to get ID and drum.strength to get strength
             data = drum.drumID;
-            data = data + drum.strength << 4;
-            data = data + 0 << 8;
+            data = data + (drum.strength << 4);
+            data = data + (0 << 8);
+            Serial.println(data);
         }
       }
     }
@@ -107,8 +108,9 @@ void loop(){
   
   while(Mirf.isSending()){
   }
-  Serial.println("Finished sending");
+  // Serial.println("Finished sending");
   delay(10);
+  /*
   while(!Mirf.dataReady()){
     //Serial.println("Waiting");
     if ( ( millis() - time ) > 200 ) {
@@ -118,6 +120,7 @@ void loop(){
       
     }
   }
+  
   unsigned long feedback;
   Mirf.getData((byte *) &feedback);
   if(feedback==data){
@@ -129,6 +132,7 @@ void loop(){
   Serial.println("Wrong data");
   }  
   delay(1);
+  */
 } 
   
   
