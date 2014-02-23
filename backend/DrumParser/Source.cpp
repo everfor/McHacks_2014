@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 	asio::io_service io;
 	asio::serial_port port(io);
 
-	port.open("COM16");
+	port.open("/dev/tty.usbserial-AM01L4KI");
 	port.set_option(asio::serial_port_base::baud_rate(115200));
 
 	char c;
@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 			DrumSet drum = receiver.getDrum();
 			if (drum.drumID > 0 && drum.strength > 1) {
 				if (detectPeak(drum)) {
-					std::string command = "python ../frontend/midiPlayer.py ";
+					std::string command = "python ../../frontend/midiPlayer.py ";
 					command.append(std::to_string(drum.drumID));
 					command.append(" ");
 					command.append(std::to_string(drum.strength));

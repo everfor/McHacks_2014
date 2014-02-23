@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import sys, time
+import sys
+import time
+import thread
 import fluidsynth
 
 TEENSY_PATH = "/dev/tty.usbmodem10131"  # 'dev/teensy'
@@ -28,16 +30,19 @@ ride_cymbal_1 = 51
 ride_cymbal_2 = 59
 
 drumID = [
-            no_drum,
-            open_hi_hat,
-            crash_cymbal_1,
-            low_mid_tom,
-            snare_drum_brush,
-            low_floor_tom,
-            hi_mid_tom,
-            ride_cymbal_1,
-            crash_cymbal_2
-        ]
+    no_drum,
+    open_hi_hat,
+    crash_cymbal_1,
+    low_mid_tom,
+    snare_drum_brush,
+    low_floor_tom,
+    hi_mid_tom,
+    ride_cymbal_1,
+    crash_cymbal_2
+]
+
+threads = [None]*16
+i = 0
 
 # # ESTABLISH CONNECTION
 # def connect():
@@ -67,24 +72,29 @@ drumID = [
 fs = fluidsynth.Synth(gain=3)
 fs.start()
 
-sfid = fs.sfload("../../frontend/best drums.sf2")
+sfid = fs.sfload("best drums.sf2")
 fs.program_select(0, sfid, 0, 0)
+
 
 def playDrum(drum, velocity):
     fs.noteon(0, drumID[drum], 127)
     print drumID[drum], "\t", velocity
     time.sleep(0.1)
-    fs.noteoff(0, drumID[drum])
-    # time.sleep(1.0)
 
+# threads[i] = thread.start_new_thread(playDrum, (int(sys.argv[1]), int(sys.argv[2]), ))
+# threads[i].join()
 
-playDrum(int(sys.argv[1]), int(sys.argv[2]))
-fs.delete()
+# i += 1
+# if i == 16:
+#     i = 0
 
-# for i in xrange(35, 82):
-#     fs.noteon(0, i, 127)
-#     print i
-#     time.sleep(0.2)
+# fs.delete()
+
+while True:
+    for i in xrange(35, 82):
+        fs.noteon(0, i, 127)
+        print i
+        time.sleep(0.2)
 
 
 # # MAIN
