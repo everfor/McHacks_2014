@@ -86,9 +86,10 @@ def playDrum(drum, velocity):
     print drumID[drum], "\t", velocity
     time.sleep(0.1)
 
-for i in xrange(35, 81):
-    fs.noteon(0, i, 127)
-    time.sleep(0.1)
+while True:
+    for i in xrange(35, 81):
+        fs.noteon(0, i, 127)
+        time.sleep(0.1)
 
 
 # # MAIN
